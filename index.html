@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arjun Khurana | Cybersecurity Analyst</title>
-    <meta name="description" content="Portfolio of Arjun Khurana - M.Sc. IT Security Student & Blue Team Analyst based in Passau, Germany.">
+    <meta name="description" content="Portfolio of Arjun Khurana - Blue Team Analyst, SOC Specialist & Security Researcher.">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,9 +38,6 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    animation: {
-                        'spin-slow': 'spin 15s linear infinite',
                     }
                 }
             }
@@ -60,13 +57,31 @@
         .section-heading { display: flex; align-items: center; white-space: nowrap; }
         .section-heading::after { content: ""; display: block; width: 100%; max-width: 300px; height: 1px; background-color: #233554; margin-left: 20px; }
         
-        /* Glassmorphism & Cards */
-        .glass-panel {
+        /* Matrix Rain Canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.05; /* Subtle effect */
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
             background: rgba(17, 34, 64, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(100, 255, 218, 0.1);
+            transition: all 0.3s ease;
         }
-        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+            box-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+        }
+
+        /* Tech Pill */
         .tech-pill {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.75rem;
@@ -81,20 +96,9 @@
         }
         .tech-pill:hover { background-color: rgba(100, 255, 218, 0.2); transform: translateY(-2px); }
 
-        /* Cyber Grid Background Animation */
-        .cyber-grid {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: linear-gradient(rgba(100, 255, 218, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(100, 255, 218, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-            pointer-events: none;
-        }
-
         /* Typing Cursor */
         .typing-cursor::after {
-            content: '|';
+            content: '▋';
             animation: blink 1s step-start infinite;
             color: #64ffda;
         }
@@ -102,18 +106,22 @@
 
         /* Active Nav Link */
         .active-nav { color: #64ffda !important; }
+        
+        /* Skill Bar Animation */
+        @keyframes fillBar { from { width: 0; } }
+        .skill-bar-fill { animation: fillBar 1.5s ease-out forwards; }
     </style>
 </head>
 <body class="antialiased leading-relaxed selection:bg-cyan-300 selection:text-navy-900 relative">
 
-    <!-- Background Grid -->
-    <div class="cyber-grid"></div>
+    <!-- Matrix Rain Background -->
+    <canvas id="matrix-canvas"></canvas>
 
     <!-- Navigation -->
     <nav id="navbar" class="fixed w-full z-50 bg-navy-900/90 backdrop-blur-md shadow-lg border-b border-navy-700 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-cyan-300 font-mono font-bold text-lg hover:text-white transition-colors z-50">
-                root@festung:~#
+            <a href="#" class="text-cyan-300 font-mono font-bold text-lg hover:text-white transition-colors z-50 flex items-center">
+                <i class="fas fa-shield-alt mr-2"></i> root@festung:~#
             </a>
             
             <!-- Desktop Menu -->
@@ -121,9 +129,10 @@
                 <a href="#about" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">01.</span> About</a>
                 <a href="#skills" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">02.</span> Skills</a>
                 <a href="#experience" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">03.</span> Exp</a>
-                <a href="#thesis" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">04.</span> Thesis</a>
-                <a href="#projects" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">05.</span> Projects</a>
-                <a href="resume.pdf" target="_blank" class="border border-cyan-300 text-cyan-300 px-4 py-2 rounded hover:bg-cyan-300/10 transition-colors">Resume</a>
+                <a href="#projects" class="nav-link hover:text-cyan-300 transition-colors"><span class="text-cyan-300">04.</span> Projects</a>
+                <a href="resume.pdf" target="_blank" class="border border-cyan-300 text-cyan-300 px-4 py-2 rounded hover:bg-cyan-300/10 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Resume
+                </a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -135,303 +144,295 @@
         </div>
 
         <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu" class="fixed inset-0 bg-navy-900 flex flex-col justify-center items-center space-y-8 text-lg font-mono transform translate-x-full transition-transform duration-300 md:hidden h-screen w-screen">
+        <div id="mobile-menu" class="fixed inset-0 bg-navy-900 flex flex-col justify-center items-center space-y-8 text-lg font-mono transform translate-x-full transition-transform duration-300 md:hidden h-screen w-screen z-40">
             <a href="#about" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">01.</span> About</a>
             <a href="#skills" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">02.</span> Skills</a>
             <a href="#experience" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">03.</span> Exp</a>
-            <a href="#thesis" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">04.</span> Thesis</a>
-            <a href="#projects" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">05.</span> Projects</a>
+            <a href="#projects" class="mobile-link hover:text-cyan-300"><span class="text-cyan-300">04.</span> Projects</a>
             <a href="resume.pdf" target="_blank" class="border border-cyan-300 text-cyan-300 px-8 py-3 rounded">Resume</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section id="hero" class="min-h-screen flex flex-col justify-center max-w-5xl mx-auto px-6 pt-20">
-        <p class="font-mono text-cyan-300 mb-5">Hi, my name is</p>
+        <div class="font-mono text-cyan-300 mb-5 bg-navy-800 inline-block px-3 py-1 rounded border border-cyan-300/30">
+            <i class="fas fa-circle text-xs mr-2 animate-pulse"></i>System Online
+        </div>
         <h1 class="text-5xl md:text-7xl font-bold text-slate-100 mb-4">Arjun Khurana.</h1>
         
         <!-- Dynamic Typing Effect -->
-        <h2 class="text-4xl md:text-6xl font-bold text-slate-400 mb-6 h-20 md:h-auto">
-            I am a <span id="typewriter" class="text-slate-200 typing-cursor"></span>
+        <h2 class="text-3xl md:text-5xl font-bold text-slate-400 mb-6 h-16 md:h-auto flex items-center">
+            I build&nbsp;<span id="typewriter" class="text-cyan-300 typing-cursor"></span>
         </h2>
         
         <p class="max-w-xl text-lg text-slate-400 mb-10 leading-relaxed">
-            I am an <span class="text-cyan-300">M.Sc. Computer Science (IT Security)</span> student specializing in security operations and risk compliance. 
-            I bridge the gap between **DevOps efficiency** and **Rigorous Defense**.
+            M.Sc. IT Security Student & Blue Team Analyst. I specialize in **Threat Detection**, **SOC Automation**, and **Risk Compliance**. 
+            I turn logs into intelligence and chaos into order.
         </p>
         
         <div class="flex flex-wrap gap-4">
-            <a href="#contact" class="font-mono border border-cyan-300 text-cyan-300 px-8 py-4 rounded hover:bg-cyan-300/10 transition-colors">
-                Contact Me
+            <a href="#contact" class="font-mono border border-cyan-300 text-cyan-300 px-8 py-4 rounded hover:bg-cyan-300/10 transition-colors flex items-center">
+                <i class="fas fa-paper-plane mr-2"></i> Contact Me
             </a>
-            <!-- Social Icons with Tooltips -->
-            <a href="https://www.linkedin.com/in/arjun-khurana-046267194/" target="_blank" class="group relative flex items-center justify-center w-14 h-14 rounded bg-navy-800 text-slate-300 hover:text-cyan-300 hover:bg-navy-700 transition-all hover:-translate-y-1">
+            <!-- Social Icons -->
+            <a href="https://www.linkedin.com/in/arjun-khurana-046267194/" target="_blank" class="group relative flex items-center justify-center w-14 h-14 rounded bg-navy-800 text-slate-300 hover:text-cyan-300 hover:bg-navy-700 transition-all hover:-translate-y-1 border border-navy-700">
                 <i class="fab fa-linkedin-in text-xl"></i>
-                <span class="absolute -bottom-8 opacity-0 group-hover:opacity-100 text-xs font-mono text-cyan-300 transition-opacity">LinkedIn</span>
             </a>
-            <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank" class="group relative flex items-center justify-center w-14 h-14 rounded bg-navy-800 text-slate-300 hover:text-cyan-300 hover:bg-navy-700 transition-all hover:-translate-y-1">
-                <i class="fab fa-github text-xl"></i>
-                <span class="absolute -bottom-8 opacity-0 group-hover:opacity-100 text-xs font-mono text-cyan-300 transition-opacity">GitHub</span>
-            </a>
-            <a href="https://tryhackme.com/p/Alphaq" target="_blank" class="group relative flex items-center justify-center w-14 h-14 rounded bg-navy-800 text-slate-300 hover:text-cyan-300 hover:bg-navy-700 transition-all hover:-translate-y-1">
-                <i class="fas fa-hackerrank text-xl"></i>
-                <span class="absolute -bottom-8 opacity-0 group-hover:opacity-100 text-xs font-mono text-cyan-300 transition-opacity">TryHackMe</span>
+            <a href="https://tryhackme.com/p/Alphaq" target="_blank" class="group relative flex items-center justify-center w-14 h-14 rounded bg-navy-800 text-slate-300 hover:text-cyan-300 hover:bg-navy-700 transition-all hover:-translate-y-1 border border-navy-700">
+                <i class="fas fa-bug text-xl"></i>
+                <span class="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-cyan-300 text-navy-900 text-xs font-bold px-2 py-1 rounded">Top 2%</span>
             </a>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="max-w-4xl mx-auto px-6 py-24 scroll-mt-20">
+    <!-- About & Stats Section -->
+    <section id="about" class="max-w-5xl mx-auto px-6 py-24 scroll-mt-20">
         <h2 class="section-heading text-2xl md:text-3xl font-bold text-slate-100 mb-10">
-            <span class="font-mono text-cyan-300 text-xl mr-2">01.</span> About Me
+            <span class="font-mono text-cyan-300 text-xl mr-2">01.</span> Intelligence Brief
         </h2>
         <div class="grid md:grid-cols-3 gap-12">
+            <!-- Text Content -->
             <div class="md:col-span-2 text-slate-400 leading-relaxed space-y-4 text-lg">
                 <p>
-                    I am currently based in <span class="text-cyan-300">Passau, Germany</span>, completing my Master's thesis. My background combines the precision of **Software Engineering** with the vigilance of **Security Operations**.
+                    Based in <span class="text-cyan-300">Passau, Germany</span>, I am bridging the gap between **Software Engineering** and **Cyber Defense**. My journey started at **Tata Consultancy Services**, where I didn't just monitor systems—I automated the reporting using Python, cutting manual work by 30%.
                 </p>
                 <p>
-                    I don't just monitor alerts; I automate the response. At **Tata Consultancy Services**, I reduced manual reporting workload by **30%** using Python. Today, I apply that engineering mindset to **SOC Operations** and **Threat Hunting**.
-                </p>
-                <p>
-                    I am fluent in **English (C2)** and conversational in **German (B1)**, ready to integrate into international security teams.
+                    Currently, I am finishing my Master's thesis on **ML-based Vulnerability Detection**, proving that AI can be a defender's best ally. I am fluent in **English (C2)** and conversational in **German (B1)**.
                 </p>
                 
-                <div class="font-mono text-sm mt-6">
-                    <p class="text-slate-100 mb-3">Core Competencies:</p>
-                    <ul class="grid grid-cols-2 gap-2">
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> Threat Detection & IR</li>
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> SIEM (Splunk)</li>
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> Vulnerability Assessment</li>
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> Endpoint Security</li>
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> Automation (Python)</li>
-                        <li class="flex items-center"><span class="text-cyan-300 mr-2">▹</span> Risk & Compliance</li>
-                    </ul>
+                <!-- Live Stats Card (TryHackMe) -->
+                <div class="mt-8 bg-navy-800 p-5 rounded-lg border border-navy-700 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-trophy text-6xl"></i>
+                    </div>
+                    <h3 class="text-slate-100 font-bold mb-2 flex items-center">
+                        <img src="https://tryhackme.com/img/favicon.png" class="w-5 h-5 mr-2" alt="THM"> TryHackMe Status
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 font-mono text-sm">
+                        <div>
+                            <p class="text-slate-500">Rank</p>
+                            <p class="text-cyan-300 font-bold">Top 2%</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Badges</p>
+                            <p class="text-slate-300">SOC Level 1</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Streak</p>
+                            <p class="text-slate-300">Active</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Role</p>
+                            <p class="text-slate-300">Blue Teamer</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Photo with stylized border -->
+            <!-- Profile Photo -->
             <div class="relative group mx-auto w-64 md:w-full">
                 <div class="absolute -inset-3 bg-cyan-300/20 rounded border border-cyan-300 translate-x-2 translate-y-2 group-hover:translate-x-1 group-hover:translate-y-1 transition-all duration-300"></div>
                 <div class="relative bg-navy-700 rounded overflow-hidden aspect-square border border-navy-700 grayscale hover:grayscale-0 transition-all duration-300">
-                    <!-- REPLACE WITH YOUR PHOTO -->
-                    <img src="https://via.placeholder.com/400x400/112240/64ffda?text=AK" alt="Arjun Khurana" class="object-cover w-full h-full">
+                    <!-- REPLACE WITH YOUR PHOTO: Rename your photo to 'profile.jpg' and put in same folder -->
+                    <img src="profile.jpg" onerror="this.src='https://via.placeholder.com/400x400/112240/64ffda?text=Arjun+Khurana'" alt="Arjun Khurana" class="object-cover w-full h-full">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Skills Grid -->
+    <!-- Skills Dashboard -->
     <section id="skills" class="max-w-5xl mx-auto px-6 py-24 scroll-mt-20">
         <h2 class="section-heading text-2xl md:text-3xl font-bold text-slate-100 mb-10">
             <span class="font-mono text-cyan-300 text-xl mr-2">02.</span> Technical Arsenal
         </h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Card 1 -->
-            <div class="bg-navy-800 p-6 rounded-lg border border-navy-700 hover:border-cyan-300 hover:-translate-y-2 transition-all duration-300 group">
-                <h3 class="text-slate-100 font-bold mb-4 flex items-center">
-                    <i class="fas fa-shield-halved text-cyan-300 mr-3 group-hover:rotate-12 transition-transform"></i> Security Ops
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Skill Bars: Security -->
+            <div class="glass-card p-6 rounded-lg">
+                <h3 class="text-xl text-slate-100 font-bold mb-6 flex items-center">
+                    <i class="fas fa-crosshairs text-cyan-300 mr-3"></i> Blue Team Ops
                 </h3>
-                <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                    <li>SIEM (Splunk)</li>
-                    <li>Threat Detection</li>
-                    <li>Incident Response</li>
-                    <li>Microsoft Defender</li>
-                    <li>MITRE ATT&CK</li>
-                </ul>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">Splunk (SIEM)</span>
+                            <span class="text-cyan-300">Advanced</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">Incident Response</span>
+                            <span class="text-cyan-300">Experienced</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">MITRE ATT&CK</span>
+                            <span class="text-cyan-300">Intermediate</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Card 2 -->
-            <div class="bg-navy-800 p-6 rounded-lg border border-navy-700 hover:border-cyan-300 hover:-translate-y-2 transition-all duration-300 group">
-                <h3 class="text-slate-100 font-bold mb-4 flex items-center">
-                    <i class="fas fa-file-contract text-cyan-300 mr-3 group-hover:rotate-12 transition-transform"></i> Risk & GRC
+            <!-- Skill Bars: Automation -->
+            <div class="glass-card p-6 rounded-lg">
+                <h3 class="text-xl text-slate-100 font-bold mb-6 flex items-center">
+                    <i class="fas fa-code text-cyan-300 mr-3"></i> Engineering & Automation
                 </h3>
-                <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                    <li>Risk Identification</li>
-                    <li>Auditing & Policy</li>
-                    <li>Regulatory Mapping</li>
-                    <li>Documentation</li>
-                    <li>Compliance Checks</li>
-                </ul>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">Python Scripting</span>
+                            <span class="text-cyan-300">Advanced</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">Bash / Shell</span>
+                            <span class="text-cyan-300">Advanced</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-mono">SQL (Oracle)</span>
+                            <span class="text-cyan-300">Experienced</span>
+                        </div>
+                        <div class="w-full bg-navy-700 h-2 rounded-full overflow-hidden">
+                            <div class="bg-cyan-300 h-full rounded-full skill-bar-fill" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- Card 3 -->
-            <div class="bg-navy-800 p-6 rounded-lg border border-navy-700 hover:border-cyan-300 hover:-translate-y-2 transition-all duration-300 group">
-                <h3 class="text-slate-100 font-bold mb-4 flex items-center">
-                    <i class="fas fa-terminal text-cyan-300 mr-3 group-hover:rotate-12 transition-transform"></i> Automation
-                </h3>
-                <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                    <li>Python Scripting</li>
-                    <li>Bash / Shell</li>
-                    <li>PowerShell</li>
-                    <li>SQL (Oracle)</li>
-                    <li>Data Analysis</li>
-                </ul>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="bg-navy-800 p-6 rounded-lg border border-navy-700 hover:border-cyan-300 hover:-translate-y-2 transition-all duration-300 group">
-                <h3 class="text-slate-100 font-bold mb-4 flex items-center">
-                    <i class="fas fa-network-wired text-cyan-300 mr-3 group-hover:rotate-12 transition-transform"></i> Infrastructure
-                </h3>
-                <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                    <li>Linux / UNIX</li>
-                    <li>Network Protocols</li>
-                    <li>Firewalls</li>
-                    <li>Security Monitoring</li>
-                    <li>Virtualization</li>
-                </ul>
-            </div>
+        </div>
+        
+        <!-- Tag Cloud -->
+        <div class="mt-8 text-center">
+            <span class="tech-pill">Risk Assessment</span>
+            <span class="tech-pill">Regulatory Mapping</span>
+            <span class="tech-pill">Microsoft Defender</span>
+            <span class="tech-pill">Linux/UNIX</span>
+            <span class="tech-pill">Docker</span>
+            <span class="tech-pill">Security Auditing</span>
+            <span class="tech-pill">Machine Learning Security</span>
         </div>
     </section>
 
-    <!-- Experience Section -->
+    <!-- Experience Timeline -->
     <section id="experience" class="max-w-4xl mx-auto px-6 py-24 scroll-mt-20">
         <h2 class="section-heading text-2xl md:text-3xl font-bold text-slate-100 mb-10">
-            <span class="font-mono text-cyan-300 text-xl mr-2">03.</span> Experience
+            <span class="font-mono text-cyan-300 text-xl mr-2">03.</span> Mission History
         </h2>
 
         <div class="relative border-l border-navy-700 ml-3 md:ml-6 space-y-12">
             
             <!-- Job 1 -->
             <div class="relative pl-8 md:pl-12 group">
-                <span class="absolute -left-[5px] top-2 w-3 h-3 rounded-full bg-cyan-300 group-hover:scale-150 transition-transform"></span>
-                <h3 class="text-xl font-bold text-slate-100">Assistant Systems Engineer <span class="text-cyan-300">@ Tata Consultancy Services</span></h3>
-                <p class="font-mono text-xs text-slate-400 mb-4 mt-1 uppercase tracking-widest">Nov 2020 – Nov 2021 | Chennai, India</p>
-                
-                <div class="text-slate-400 space-y-3">
-                    <p>
-                        Managed global supply chain operations and ensured security compliance for critical US distribution centers.
-                    </p>
-                    <ul class="list-disc ml-4 space-y-2 marker:text-cyan-300">
-                        <li>Engineered **Python and Bash automation scripts**, boosting monitoring efficiency and reporting by **30%**.</li>
-                        <li>Executed compliance checks and risk assessments, leading to a **25% reduction** in system vulnerabilities.</li>
-                        <li>Analyzed system logs using UNIX shell and IBM Cognos to support data-driven security decisions.</li>
-                    </ul>
+                <span class="absolute -left-[5px] top-2 w-3 h-3 rounded-full bg-cyan-300 group-hover:scale-150 transition-transform shadow-[0_0_10px_#64ffda]"></span>
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2">
+                    <h3 class="text-xl font-bold text-slate-100">Assistant Systems Engineer <span class="text-cyan-300">@ TCS</span></h3>
+                    <span class="font-mono text-xs text-slate-400">Nov 2020 – Nov 2021</span>
                 </div>
+                <p class="text-sm text-slate-400 mb-4 italic">Global Supply Chain Operations</p>
+                <ul class="list-disc ml-4 space-y-2 text-slate-400 marker:text-cyan-300">
+                    <li>Engineered **Python/Bash automation scripts**, reducing manual reporting workload by **30%**.</li>
+                    <li>Conducted compliance checks leading to a **25% reduction** in system vulnerabilities.</li>
+                    <li>Managed critical warehouse systems (WMOS) for US clients, ensuring 99.9% uptime.</li>
+                </ul>
             </div>
 
             <!-- Job 2 -->
             <div class="relative pl-8 md:pl-12 group">
-                <span class="absolute -left-[5px] top-2 w-3 h-3 rounded-full bg-navy-700 border border-cyan-300 group-hover:bg-cyan-300 transition-colors"></span>
-                <h3 class="text-xl font-bold text-slate-100">Virtual Internships <span class="text-cyan-300">@ Deloitte & JPMorgan Chase</span></h3>
-                <p class="font-mono text-xs text-slate-400 mb-4 mt-1 uppercase tracking-widest">2020 | Virtual</p>
-                <div class="space-y-4 text-slate-400">
-                    <div>
-                        <h4 class="text-slate-200 font-bold">Deloitte (Technology Consulting)</h4>
-                        <p class="text-sm">Built automation scripts for system performance monitoring and reporting, streamlining IT workflows.</p>
+                <span class="absolute -left-[5px] top-2 w-3 h-3 rounded-full bg-navy-800 border border-cyan-300 group-hover:bg-cyan-300 transition-colors"></span>
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2">
+                    <h3 class="text-xl font-bold text-slate-100">Virtual Internships</h3>
+                    <span class="font-mono text-xs text-slate-400">2020</span>
+                </div>
+                <div class="space-y-4 text-slate-400 mt-2">
+                    <div class="bg-navy-800 p-4 rounded border-l-2 border-navy-700 hover:border-cyan-300 transition-colors">
+                        <h4 class="text-slate-200 font-bold flex justify-between">
+                            <span>Deloitte</span>
+                            <span class="text-xs font-mono text-cyan-300">Tech Consulting</span>
+                        </h4>
+                        <p class="text-sm mt-1">Built performance monitoring scripts to streamline IT workflows.</p>
                     </div>
-                    <div>
-                        <h4 class="text-slate-200 font-bold">JPMorgan Chase (Software Engineering)</h4>
-                        <p class="text-sm">Developed frontend data feeds and visualizations for trading applications to analyze real-time financial data.</p>
+                    <div class="bg-navy-800 p-4 rounded border-l-2 border-navy-700 hover:border-cyan-300 transition-colors">
+                        <h4 class="text-slate-200 font-bold flex justify-between">
+                            <span>JPMorgan Chase</span>
+                            <span class="text-xs font-mono text-cyan-300">Software Eng</span>
+                        </h4>
+                        <p class="text-sm mt-1">Developed data visualization dashboards for real-time trading data.</p>
                     </div>
                 </div>
             </div>
 
-        </div>
-    </section>
-
-    <!-- Master's Thesis Section -->
-    <section id="thesis" class="max-w-5xl mx-auto px-6 py-24 scroll-mt-20">
-        <h2 class="section-heading text-2xl md:text-3xl font-bold text-slate-100 mb-10">
-            <span class="font-mono text-cyan-300 text-xl mr-2">04.</span> Master's Thesis
-        </h2>
-
-        <div class="glass-panel p-8 rounded-xl relative overflow-hidden border-l-4 border-l-cyan-300 hover:bg-navy-800/50 transition-colors">
-            <div class="absolute top-0 right-0 bg-cyan-300 w-24 h-24 blur-[80px] opacity-10"></div>
-            
-            <div class="mb-6">
-                <span class="font-mono text-cyan-300 text-xs uppercase tracking-widest mb-2 block">Current Research</span>
-                <h3 class="text-2xl font-bold text-slate-100">
-                    Evaluating Transformer & Graph-Based ML Models for Java Vulnerability Detection
-                </h3>
-                <p class="text-sm text-slate-400 mt-2 font-mono">Using: CVEFixes, JavaVFC, MegaVul Datasets</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-10 text-slate-300">
-                <div>
-                    <h4 class="text-slate-100 font-bold mb-2 text-sm uppercase tracking-wide">Problem Statement</h4>
-                    <p class="text-sm mb-4">
-                        Traditional static analysis tools suffer from high false-positive rates. This research evaluates context-aware Deep Learning models to improve detection accuracy in Java source code.
-                    </p>
-                    
-                    <h4 class="text-slate-100 font-bold mb-2 text-sm uppercase tracking-wide">Model Architectures</h4>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="tech-pill">CodeBERT</span>
-                        <span class="tech-pill">GraphCodeBERT</span>
-                        <span class="tech-pill">BiLSTM</span>
-                        <span class="tech-pill">CNN</span>
-                        <span class="tech-pill">GNN</span>
-                    </div>
-                </div>
-
-                <div class="border-l border-navy-700 pl-6">
-                    <div class="mb-4">
-                        <h4 class="text-slate-100 font-bold mb-1 text-sm uppercase tracking-wide">Dataset Overview</h4>
-                        <p class="text-sm">~20,000 samples of vulnerable vs. patched code snippets.</p>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-slate-100 font-bold mb-1 text-sm uppercase tracking-wide">Expected Contribution</h4>
-                        <p class="text-sm">
-                            Developing a robust benchmarking framework to identify which transformer architecture best captures semantic vulnerabilities in object-oriented code.
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 
     <!-- Projects Section -->
     <section id="projects" class="max-w-6xl mx-auto px-6 py-24 scroll-mt-20">
         <h2 class="section-heading text-2xl md:text-3xl font-bold text-slate-100 mb-10">
-            <span class="font-mono text-cyan-300 text-xl mr-2">05.</span> Key Projects
+            <span class="font-mono text-cyan-300 text-xl mr-2">04.</span> Key Operations
         </h2>
         
         <div class="grid md:grid-cols-3 gap-6">
-            <!-- Project 1 -->
-            <div class="bg-navy-800 p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 group h-full flex flex-col border border-transparent hover:border-cyan-300/30">
+            <!-- Thesis Project -->
+            <div class="glass-card p-6 rounded-xl h-full flex flex-col relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-cyan-300 w-16 h-16 blur-[50px] opacity-20"></div>
                 <div class="flex justify-between items-center mb-4">
-                    <i class="fas fa-folder text-4xl text-cyan-300"></i>
+                    <i class="fas fa-brain text-4xl text-cyan-300"></i>
+                    <a href="#" class="text-slate-400 hover:text-cyan-300"><i class="fas fa-external-link-alt text-xl"></i></a>
+                </div>
+                <h3 class="text-lg font-bold text-slate-100 mb-2">ML Vulnerability Scanner (Thesis)</h3>
+                <p class="text-sm text-slate-400 mb-4 flex-grow">
+                    Evaluating Transformer models (CodeBERT) to detect security flaws in Java code. Reducing false positives in static analysis using a dataset of 20,000 samples.
+                </p>
+                <div class="text-xs font-mono text-cyan-300 flex gap-3 mt-auto">
+                    <span>PyTorch</span> <span>Transformers</span> <span>Java</span>
+                </div>
+            </div>
+
+            <!-- SOC Project -->
+            <div class="glass-card p-6 rounded-xl h-full flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <i class="fas fa-radar text-4xl text-cyan-300"></i>
                     <a href="#" class="text-slate-400 hover:text-cyan-300"><i class="fab fa-github text-xl"></i></a>
                 </div>
-                <h3 class="text-lg font-bold text-slate-100 mb-2 group-hover:text-cyan-300">SOC Alert Triage & Labs</h3>
+                <h3 class="text-lg font-bold text-slate-100 mb-2">SOC Alert Triage Suite</h3>
                 <p class="text-sm text-slate-400 mb-4 flex-grow">
-                    Simulated realistic attack scenarios (Brute Force, SQLi) and performed alert triage using Splunk. Documented investigation playbooks.
+                    Built a lab simulating Brute Force & SQLi attacks. Created Splunk dashboards for real-time monitoring and playbooks for incident response.
                 </p>
-                <div class="text-xs font-mono text-cyan-300 flex gap-3">
+                <div class="text-xs font-mono text-cyan-300 flex gap-3 mt-auto">
                     <span>Splunk</span> <span>MITRE</span> <span>Triage</span>
                 </div>
             </div>
 
-            <!-- Project 2 -->
-            <div class="bg-navy-800 p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 group h-full flex flex-col border border-transparent hover:border-cyan-300/30">
+            <!-- Automation Project -->
+            <div class="glass-card p-6 rounded-xl h-full flex flex-col">
                 <div class="flex justify-between items-center mb-4">
                     <i class="fas fa-robot text-4xl text-cyan-300"></i>
                     <a href="#" class="text-slate-400 hover:text-cyan-300"><i class="fab fa-github text-xl"></i></a>
                 </div>
-                <h3 class="text-lg font-bold text-slate-100 mb-2 group-hover:text-cyan-300">Python Automation Suite</h3>
+                <h3 class="text-lg font-bold text-slate-100 mb-2">Python Automation Tools</h3>
                 <p class="text-sm text-slate-400 mb-4 flex-grow">
-                    A collection of scripts to parse logs, automate IP reputation checks, and streamline incident reporting workflows.
+                    A repository of scripts for log parsing, IP reputation checks (VirusTotal API), and automated reporting to reduce analyst fatigue.
                 </p>
-                <div class="text-xs font-mono text-cyan-300 flex gap-3">
+                <div class="text-xs font-mono text-cyan-300 flex gap-3 mt-auto">
                     <span>Python</span> <span>API</span> <span>JSON</span>
-                </div>
-            </div>
-
-            <!-- Project 3 -->
-            <div class="bg-navy-800 p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 group h-full flex flex-col border border-transparent hover:border-cyan-300/30">
-                <div class="flex justify-between items-center mb-4">
-                    <i class="fas fa-server text-4xl text-cyan-300"></i>
-                    <a href="#" class="text-slate-400 hover:text-cyan-300"><i class="fab fa-github text-xl"></i></a>
-                </div>
-                <h3 class="text-lg font-bold text-slate-100 mb-2 group-hover:text-cyan-300">RootFestung Home Lab</h3>
-                <p class="text-sm text-slate-400 mb-4 flex-grow">
-                    Self-hosted security environment. Configured Nginx reverse proxy, hardened SSH access, and implemented intrusion detection rules.
-                </p>
-                <div class="text-xs font-mono text-cyan-300 flex gap-3">
-                    <span>Linux</span> <span>Nginx</span> <span>Hardening</span>
                 </div>
             </div>
         </div>
@@ -439,15 +440,15 @@
 
     <!-- Contact Section -->
     <section id="contact" class="max-w-2xl mx-auto px-6 py-32 text-center">
-        <p class="font-mono text-cyan-300 mb-4">06. What's Next?</p>
+        <p class="font-mono text-cyan-300 mb-4">05. Establishing Connection</p>
         <h2 class="text-4xl md:text-5xl font-bold text-slate-100 mb-6">Get In Touch</h2>
         <p class="text-slate-400 text-lg mb-10">
             I am actively looking for full-time opportunities in **Blue Teaming, SOC Analysis, or Security Engineering** in Germany. 
-            My inbox is always open.
+            My inbox is open for recruiters and collaborators.
         </p>
         
         <a href="mailto:erarjun@outlook.com" class="inline-block border border-cyan-300 text-cyan-300 px-8 py-4 rounded font-mono hover:bg-cyan-300/10 transition-colors mb-12">
-            Say Hello
+            Initiate Protocol: Say Hello
         </a>
 
         <div class="text-sm text-slate-500 font-mono">
@@ -458,10 +459,10 @@
     <!-- Footer -->
     <footer class="text-center py-6 bg-navy-900 text-slate-500 font-mono text-xs border-t border-navy-800">
         <p>Designed & Built by Arjun Khurana</p>
-        <p class="mt-1">Hosted on <span class="text-cyan-300">rootfestung.de</span></p>
+        <p class="mt-1">Secured at <span class="text-cyan-300">rootfestung.de</span></p>
     </footer>
 
-    <!-- JavaScript for Interactivity -->
+    <!-- JavaScript -->
     <script>
         // 1. Mobile Menu Toggle
         const btn = document.getElementById('menu-btn');
@@ -471,17 +472,10 @@
 
         btn.addEventListener('click', () => {
             menu.classList.toggle('translate-x-full');
-            // Change Icon
-            if(menu.classList.contains('translate-x-full')){
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            } else {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            }
+            icon.classList.toggle('fa-times');
+            icon.classList.toggle('fa-bars');
         });
 
-        // Close menu when a link is clicked
         menuLinks.forEach(link => {
             link.addEventListener('click', () => {
                 menu.classList.add('translate-x-full');
@@ -492,14 +486,13 @@
 
         // 2. Typing Effect
         const textElement = document.getElementById('typewriter');
-        const texts = ["SOC Analyst.", "Security Researcher.", "Blue Teamer.", "Python Developer."];
+        const texts = ["Secure Infrastructure.", "Threat Detection.", "Automation Scripts.", "Resilient Systems."];
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
 
         function type() {
             const currentText = texts[textIndex];
-            
             if (isDeleting) {
                 textElement.textContent = currentText.substring(0, charIndex - 1);
                 charIndex--;
@@ -511,38 +504,60 @@
             let typeSpeed = isDeleting ? 50 : 100;
 
             if (!isDeleting && charIndex === currentText.length) {
-                typeSpeed = 2000; // Pause at end
+                typeSpeed = 2000;
                 isDeleting = true;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 textIndex = (textIndex + 1) % texts.length;
                 typeSpeed = 500;
             }
-
             setTimeout(type, typeSpeed);
         }
-
         document.addEventListener('DOMContentLoaded', type);
 
-        // 3. Active Scroll Highlighting
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.nav-link');
+        // 3. Matrix Rain Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
 
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (scrollY >= sectionTop - 150) {
-                    current = section.getAttribute('id');
-                }
-            });
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-            navLinks.forEach(link => {
-                link.classList.remove('active-nav');
-                if (link.getAttribute('href').includes(current)) {
-                    link.classList.add('active-nav');
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789XYZ';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width/fontSize;
+
+        const rainDrops = [];
+        for( let x = 0; x < columns; x++ ) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(10, 25, 47, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0'; // Green text
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < rainDrops.length; i++)
+            {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, rainDrops[i]*fontSize);
+
+                if(rainDrops[i]*fontSize > canvas.height && Math.random() > 0.975){
+                    rainDrops[i] = 0;
                 }
-            });
+                rainDrops[i]++;
+            }
+        };
+        setInterval(draw, 30);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
     </script>
 
